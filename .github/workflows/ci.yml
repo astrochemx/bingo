@@ -51,9 +51,22 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
       - uses: ./.github/actions/prepare
       - run: pnpm format --list-different
-  test:
-    name: Test
+  test_ubuntu:
+    name: Test on Ubuntu
     runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      - uses: ./.github/actions/prepare
+      - run: pnpm run -r prebuild
+      - run: pnpm run build
+      - run: pnpm run test --coverage
+      - env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        if: always()
+        uses: codecov/codecov-action@v3
+  test_windows:
+    name: Test on Windows
+    runs-on: windows-latest
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
       - uses: ./.github/actions/prepare
@@ -78,4 +91,5 @@ on:
   pull_request: ~
   push:
     branches:
+      - "fix/windows-paths-url"
       - main
